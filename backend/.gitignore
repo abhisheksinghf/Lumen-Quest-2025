@@ -1,0 +1,42 @@
+# Node.js modules
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Dependency directory for npm
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# .env file used for sensitive data (e.g. DB credentials)
+.env.local
+.env.development
+.env.production
+
+# Operating System files
+.DS_Store        # Mac OS files
+Thumbs.db        # Windows files
+
+# Build/Dist files
+/dist/
+build/
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Optional: Uncomment if you are using npm or yarn lock files
+# package-lock.json
+# yarn.lock
+
+# Optional: Ignore coverage folder (for testing)
+coverage/
+
+# Optional: Ignore build artifacts
+*.tgz
+
