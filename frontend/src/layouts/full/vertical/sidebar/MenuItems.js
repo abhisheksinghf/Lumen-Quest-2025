@@ -50,6 +50,9 @@ import {
   IconLockAccess,
   IconListDetails,
   IconListNumbers,
+  IconDashboard,
+  IconBrandProducthunt,
+  IconCar,
 } from '@tabler/icons';
 
 import { uniqueId } from 'lodash';
@@ -461,33 +464,33 @@ const Menuitems = [
   {
     id: uniqueId(),
     title: 'Dashboard',
-    icon: IconBoxAlignLeft,
+    icon: IconDashboard,
     href: '/dashboards/ecommerce',
   },
   {
     id: uniqueId(),
     title: 'Users',
-    icon: IconBoxAlignLeft,
+    icon: IconUserCircle,
     href: '/forms/users',
   },
   
   {
     id: uniqueId(),
     title: 'Products',
-    icon: IconBoxAlignLeft,
+    icon: IconBrandProducthunt,
     href: '/forms/Products',
   },
   
-  {
-    id: uniqueId(),
-    title: 'Products',
-    icon: IconBoxAlignLeft,
-    href: '/forms/form-vertical',
-  },
+  // {
+  //   id: uniqueId(),
+  //   title: 'Products',
+  //   icon: IconBoxAlignLeft,
+  //   href: '/forms/form-vertical',
+  // },
   {
     id: uniqueId(),
     title: 'Suppliers',
-    icon: IconBoxAlignLeft,
+    icon: IconCar,
     href: '/forms/Suppliers',
   },
   // {

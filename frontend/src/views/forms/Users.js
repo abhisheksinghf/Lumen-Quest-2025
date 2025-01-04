@@ -4,20 +4,10 @@ import {
   Typography,
   TextField,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   IconButton,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
+import { DataGrid } from '@mui/x-data-grid'; // Import DataGrid from Material-UI
 import axios from 'axios';
 import Breadcrumb from '../../layouts/full/shared/breadcrumb/Breadcrumb';
 
@@ -36,7 +26,11 @@ const UserForm = () => {
     axios
       .get('http://localhost:5000/api/users')
       .then((response) => {
-        setRows(response.data);
+        const formattedRows = response.data.map((row) => ({
+          id: row.user_id, // Required by DataGrid
+          ...row,
+        }));
+        setRows(formattedRows);
       })
       .catch((error) => console.error('Error fetching users:', error));
   }, []);
@@ -53,18 +47,14 @@ const UserForm = () => {
     if (editingIndex !== null) {
       // Update an existing user
       axios
-        .put(`http://localhost:5000/api/users/${rows[editingIndex].user_id}`, formData)
+        .put(`http://localhost:5000/api/users/${editingIndex}`, formData)
         .then((response) => {
-          const updatedRows = [...rows];
-          updatedRows[editingIndex] = response.data;
+          console.log('User updated:', response.data);  // Log updated user data
+          const updatedRows = rows.map((row) =>
+            row.id === editingIndex ? { ...row, ...formData } : row
+          );
           setRows(updatedRows);
-          setEditingIndex(null);
-          setFormData({
-            username: '',
-            password: '',
-            email: '',
-            role: '',
-          });
+          resetForm();
         })
         .catch((error) => console.error('Error updating user:', error));
     } else {
@@ -72,16 +62,26 @@ const UserForm = () => {
       axios
         .post('http://localhost:5000/api/users', formData)
         .then((response) => {
-          setRows((prevRows) => [...prevRows, response.data]);
-          setFormData({
-            username: '',
-            password: '',
-            email: '',
-            role: '',
-          });
+          console.log('User added:', response.data);  // Log new user data
+          setRows((prevRows) => [
+            ...prevRows,
+            { id: response.data.userId, username: formData.username, email: formData.email, role: formData.role },
+          ]);
+          resetForm();
         })
         .catch((error) => console.error('Error adding user:', error));
     }
+  };
+  
+
+  const resetForm = () => {
+    setEditingIndex(null);
+    setFormData({
+      username: '',
+      password: '',
+      email: '',
+      role: '',
+    });
   };
 
   // Breadcrumb for navigation
@@ -96,9 +96,12 @@ const UserForm = () => {
   ];
 
   // Handle editing an existing user
-  const handleEdit = (index) => {
-    setEditingIndex(index);
-    setFormData({ ...rows[index], password: '' }); // Clear password when editing
+  const handleEdit = (id) => {
+    const user = rows.find((row) => row.id === id);
+    if (user) {
+      setEditingIndex(id);
+      setFormData(user);
+    }
   };
 
   // Handle deleting a user
@@ -106,10 +109,39 @@ const UserForm = () => {
     axios
       .delete(`http://localhost:5000/api/users/${id}`)
       .then(() => {
-        setRows(rows.filter((row) => row.user_id !== id));
+        setRows(rows.filter((row) => row.id !== id));
       })
       .catch((error) => console.error('Error deleting user:', error));
   };
+
+  // DataGrid columns definition
+  const columns = [
+    { field: 'username', headerName: 'Username', flex: 1, sortable: true },
+    { field: 'email', headerName: 'Email', flex: 1, sortable: true },
+    { field: 'role', headerName: 'Role', flex: 1, sortable: true },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      flex: 1,
+      sortable: false,
+      renderCell: (params) => (
+        <>
+          <IconButton
+            color="primary"
+            onClick={() => handleEdit(params.row.id)}
+          >
+            <Edit />
+          </IconButton>
+          <IconButton
+            color="secondary"
+            onClick={() => handleDelete(params.row.id)}
+          >
+            <Delete />
+          </IconButton>
+        </>
+      ),
+    },
+  ];
 
   return (
     <div style={{ padding: '0px' }}>
@@ -153,20 +185,14 @@ const UserForm = () => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
-              <InputLabel>Role</InputLabel>
-              <Select
-                label="Role"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                required
-              >
-                <MenuItem value="Admin">Admin</MenuItem>
-                <MenuItem value="Manager">Manager</MenuItem>
-                <MenuItem value="Staff">Staff</MenuItem>
-              </Select>
-            </FormControl>
+            <TextField
+              fullWidth
+              label="Role"
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              required
+            />
           </Grid>
           <Grid item xs={12}>
             <Button variant="contained" color="primary" type="submit">
@@ -176,52 +202,15 @@ const UserForm = () => {
         </Grid>
       </form>
 
-      <Typography variant="h5" gutterBottom>
-        User Table
-      </Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Username</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.length > 0 ? (
-              rows.map((row, index) => (
-                <TableRow key={row.user_id}>
-                  <TableCell>{row.username}</TableCell>
-                  <TableCell>{row.email}</TableCell>
-                  <TableCell>{row.role}</TableCell>
-                  <TableCell>
-                    <IconButton
-                      color="primary"
-                      onClick={() => handleEdit(index)}
-                    >
-                      <Edit />
-                    </IconButton>
-                    <IconButton
-                      color="secondary"
-                      onClick={() => handleDelete(row.user_id)}
-                    >
-                      <Delete />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={4} align="center">
-                  No data available
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <div style={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pageSize={5}
+          rowsPerPageOptions={[5, 10, 20]}
+          disableSelectionOnClick
+        />
+      </div>
     </div>
   );
 };

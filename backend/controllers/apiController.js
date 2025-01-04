@@ -1,27 +1,96 @@
 // controllers/apiController.js
 const db = require('../config/db');
+const bcrypt = require('bcrypt');
 
-// Users - Get all users
 const getUsers = async (req, res) => {
   try {
     const [rows] = await db.execute('SELECT * FROM users');
+    console.log('Fetched users from DB:', rows);  // Log database response
     res.status(200).json(rows);
   } catch (err) {
+    console.error('Error fetching users:', err);  // Log any error
     res.status(500).json({ message: 'Error fetching users', error: err.message });
   }
 };
 
+
 // Users - Create a new user
 const createUser = async (req, res) => {
   const { username, password, role, email } = req.body;
+
+  if (!username || !password || !role || !email) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
   try {
+    const hashedPassword = await bcrypt.hash(password, 10); // Encrypt password
     const [result] = await db.execute(
       'INSERT INTO users (username, password, role, email) VALUES (?, ?, ?, ?)',
-      [username, password, role, email]
+      [username, hashedPassword, role, email]
     );
-    res.status(201).json({ message: 'User created successfully', userId: result.insertId });
+    res.status(201).json({
+      message: 'User created successfully',
+      userId: result.insertId,  // Ensure userId is sent
+      username,
+      email,
+      role,
+    });
   } catch (err) {
     res.status(500).json({ message: 'Error creating user', error: err.message });
+  }
+};
+
+
+// Users - Update a user
+const updateUser = async (req, res) => {
+  const { id } = req.params;
+  const { username, password, role, email } = req.body;
+
+  if (!username || !role || !email) {
+    return res.status(400).json({ message: 'Username, role, and email are required' });
+  }
+
+  try {
+    let hashedPassword = null;
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10); // Encrypt new password if provided
+    }
+
+    const query =
+      hashedPassword
+        ? 'UPDATE users SET username = ?, password = ?, role = ?, email = ? WHERE user_id = ?'
+        : 'UPDATE users SET username = ?, role = ?, email = ? WHERE user_id = ?';
+    
+    const values = hashedPassword
+      ? [username, hashedPassword, role, email, id]
+      : [username, role, email, id];
+
+    const [result] = await db.execute(query, values);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'User updated successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating user', error: err.message });
+  }
+};
+
+// Users - Delete a user
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const [result] = await db.execute('DELETE FROM users WHERE user_id = ?', [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting user', error: err.message });
   }
 };
 
@@ -291,7 +360,7 @@ const createNotification = async (req, res) => {
 };
 
 module.exports = {
-  getUsers, createUser,
+  getUsers, createUser, deleteUser, updateUser,
   getProducts, createProduct, updateProduct, deleteProduct,
   getSuppliers, createSupplier, updateSupplier, deleteSupplier,
   getTransactions, createTransaction,
