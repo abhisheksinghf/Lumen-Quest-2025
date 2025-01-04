@@ -10,15 +10,14 @@ import { Edit, Delete } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid'; // MUI DataGrid component
 import axios from 'axios';
 
-const SupplierForm = () => {
+const TransactionForm = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    contact_person: '',
-    phone: '',
-    email: '',
-    address: '',
-    country: '',
-    status: '',
+    product_id: '',
+    user_id: '',
+    transaction_type: '',
+    quantity: '',
+    transaction_date: '',
+    remarks: '',
   });
 
   const [rows, setRows] = useState([]);
@@ -27,15 +26,15 @@ const SupplierForm = () => {
 
   useEffect(() => {
     axios
-      .get('http://localhost:5000/api/suppliers')
+      .get('http://localhost:5000/api/transactions') // Endpoint for fetching transactions
       .then((response) => {
         const formattedRows = response.data.map((row, index) => ({
-          id: row.supplier_id,
+          id: row.transaction_id,
           ...row,
         }));
         setRows(formattedRows);
       })
-      .catch((error) => console.error('Error fetching suppliers:', error));
+      .catch((error) => console.error('Error fetching transactions:', error));
   }, []);
 
   const handleChange = (e) => {
@@ -47,7 +46,7 @@ const SupplierForm = () => {
     e.preventDefault();
     if (editingIndex !== null) {
       axios
-        .put(`http://localhost:5000/api/suppliers/${editingIndex}`, formData)
+        .put(`http://localhost:5000/api/transactions/${editingIndex}`, formData)
         .then((response) => {
           const updatedRows = rows.map((row) =>
             row.id === editingIndex ? { ...row, ...formData } : row
@@ -55,83 +54,81 @@ const SupplierForm = () => {
           setRows(updatedRows);
           setEditingIndex(null);
           setFormData({
-            name: '',
-            contact_person: '',
-            phone: '',
-            email: '',
-            address: '',
-            country: '',
-            status: '',
+            product_id: '',
+            user_id: '',
+            transaction_type: '',
+            quantity: '',
+            transaction_date: '',
+            remarks: '',
           });
         })
         .catch((error) => {
-          console.error('Error updating supplier:', error);
-          setError('Failed to update the supplier. Please try again later.');
+          console.error('Error updating transaction:', error);
+          setError('Failed to update the transaction. Please try again later.');
         });
     } else {
       axios
-        .post('http://localhost:5000/api/suppliers', formData)
+        .post('http://localhost:5000/api/transactions', formData)
         .then((response) => {
           setRows((prevRows) => [
             ...prevRows,
-            { id: response.data.supplier_id, ...response.data },
+            { id: response.data.transaction_id, ...response.data },
           ]);
           setFormData({
-            name: '',
-            contact_person: '',
-            phone: '',
-            email: '',
-            address: '',
-            country: '',
-            status: '',
+            product_id: '',
+            user_id: '',
+            transaction_type: '',
+            quantity: '',
+            transaction_date: '',
+            remarks: '',
           });
         })
         .catch((error) => {
-          console.error('Error adding supplier:', error);
-          setError('Failed to add the supplier. Please try again later.');
+          console.error('Error adding transaction:', error);
+          setError('Failed to add the transaction. Please try again later.');
         });
     }
   };
 
   const handleEdit = (id) => {
-    const supplier = rows.find((row) => row.id === id);
-    if (supplier) {
+    const transaction = rows.find((row) => row.id === id);
+    if (transaction) {
       setEditingIndex(id);
-      setFormData(supplier);
+      setFormData(transaction);
     }
   };
 
   const handleDelete = (id) => {
     axios
-      .delete(`http://localhost:5000/api/suppliers/${id}`)
+      .delete(`http://localhost:5000/api/transactions/${id}`)
       .then(() => {
         setRows(rows.filter((row) => row.id !== id));
       })
       .catch((error) => {
-        console.error('Error deleting supplier:', error);
-        setError('Failed to delete the supplier. Please try again later.');
+        console.error('Error deleting transaction:', error);
+        setError('Failed to delete the transaction. Please try again later.');
       });
   };
 
   const exportToCSV = () => {
     const headers = [
-      'Supplier Name',
-      'Contact Person',
-      'Phone',
-      'Email',
-      'Address',
-      'Country',
+      'Product ID',
+      'User ID',
+      'Transaction Type',
+      'Quantity',
+      'Transaction Date',
+      'Remarks',
     ];
     const csvContent = [
       headers.join(','),
       ...rows.map((row) =>
         [
-          row.name,
-          row.contact_person,
-          row.phone,
-          row.email,
-          row.address,
-          row.country,
+          row.product_id,
+          row.user_id,
+          row.transaction_type,
+          row.quantity,
+          row.transaction_date,
+          row.remarks,
         ].join(',')
       ),
     ].join('\n');
@@ -140,18 +137,19 @@ const SupplierForm = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'suppliers.csv');
+    link.setAttribute('download', 'transactions.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
   const columns = [
-    { field: 'name', headerName: 'Supplier Name', flex: 1 },
-    { field: 'contact_person', headerName: 'Contact Person', flex: 1 },
-    { field: 'phone', headerName: 'Phone', flex: 1 },
-    { field: 'email', headerName: 'Email', flex: 1 },
-    { field: 'address', headerName: 'Address', flex: 1 },
+    { field: 'product_id', headerName: 'Product ID', flex: 1 },
+    { field: 'user_id', headerName: 'User ID', flex: 1 },
+    { field: 'transaction_type', headerName: 'Transaction Type', flex: 1 },
+    { field: 'quantity', headerName: 'Quantity', flex: 1 },
+    { field: 'transaction_date', headerName: 'Transaction Date', flex: 1 },
+    { field: 'remarks', headerName: 'Remarks', flex: 1 },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -179,7 +177,7 @@ const SupplierForm = () => {
   return (
     <div style={{ padding: '20px' }}>
       <Typography variant="h4" gutterBottom>
-        Supplier Management
+        Transaction Management
       </Typography>
 
       {error && (
@@ -193,9 +191,9 @@ const SupplierForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Supplier Name"
-              name="name"
-              value={formData.name}
+              label="Product ID"
+              name="product_id"
+              value={formData.product_id}
               onChange={handleChange}
               required
             />
@@ -203,9 +201,9 @@ const SupplierForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Contact Person"
-              name="contact_person"
-              value={formData.contact_person}
+              label="User ID"
+              name="user_id"
+              value={formData.user_id}
               onChange={handleChange}
               required
             />
@@ -213,9 +211,9 @@ const SupplierForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Phone"
-              name="phone"
-              value={formData.phone}
+              label="Transaction Type"
+              name="transaction_type"
+              value={formData.transaction_type}
               onChange={handleChange}
               required
             />
@@ -223,9 +221,9 @@ const SupplierForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Email"
-              name="email"
-              value={formData.email}
+              label="Quantity"
+              name="quantity"
+              value={formData.quantity}
               onChange={handleChange}
               required
             />
@@ -233,16 +231,26 @@ const SupplierForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Address"
-              name="address"
-              value={formData.address}
+              label="Transaction Date"
+              name="transaction_date"
+              value={formData.transaction_date}
+              onChange={handleChange}
+              required
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Remarks"
+              name="remarks"
+              value={formData.remarks}
               onChange={handleChange}
               required
             />
           </Grid>
           <Grid item xs={12}>
             <Button variant="contained" color="primary" type="submit">
-              {editingIndex !== null ? 'Update Supplier' : 'Add Supplier'}
+              {editingIndex !== null ? 'Update Transaction' : 'Add Transaction'}
             </Button>
           </Grid>
         </Grid>
@@ -270,4 +278,4 @@ const SupplierForm = () => {
   );
 };
 
-export default SupplierForm;
+export default TransactionForm;

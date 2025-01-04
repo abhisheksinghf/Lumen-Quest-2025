@@ -53,6 +53,7 @@ import {
   IconDashboard,
   IconBrandProducthunt,
   IconCar,
+  IconMoneybag,
 } from '@tabler/icons';
 
 import { uniqueId } from 'lodash';
@@ -493,6 +494,14 @@ const Menuitems = [
     icon: IconCar,
     href: '/forms/Suppliers',
   },
+  
+  {
+    id: uniqueId(),
+    title: 'Transactions',
+    icon: IconMoneybag,
+    href: '/forms/StockInout',
+  },
+
   // {
   //   id: uniqueId(),
   //   title: 'Transactions',

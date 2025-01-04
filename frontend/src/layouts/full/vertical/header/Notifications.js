@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   IconButton,
@@ -16,9 +16,11 @@ import Scrollbar from 'src/components/custom-scroll/Scrollbar';
 
 import { IconBellRinging } from '@tabler/icons';
 import { Stack } from '@mui/system';
+import InventoryIcon from '@mui/icons-material/Inventory';  // Stock icon
 
 const Notifications = () => {
   const [anchorEl2, setAnchorEl2] = useState(null);
+  const [notifications, setNotifications] = useState([]); // Added state for notifications
 
   const handleClick2 = (event) => {
     setAnchorEl2(event.currentTarget);
@@ -27,6 +29,24 @@ const Notifications = () => {
   const handleClose2 = () => {
     setAnchorEl2(null);
   };
+
+  // Fetch the low-stock data and update notifications
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      const response = await fetch('http://localhost:5000/api/getlowstock');
+      const data = await response.json();
+
+      const formattedNotifications = data.map((product, index) => ({
+        avatar: <InventoryIcon />,  // Use stock-related icon
+        title: `${product.name} is low on stock`,
+        subtitle: `Stock level: ${product.stock_level}`,
+      }));
+
+      setNotifications(formattedNotifications);
+    };
+
+    fetchNotifications();
+  }, []);
 
   return (
     <Box>
@@ -48,7 +68,7 @@ const Notifications = () => {
         </Badge>
       </IconButton>
       {/* ------------------------------------------- */}
-      {/* Message Dropdown */}
+      {/* Stock Alert Dropdown */}
       {/* ------------------------------------------- */}
       <Menu
         id="msgs-menu"
@@ -65,22 +85,26 @@ const Notifications = () => {
         }}
       >
         <Stack direction="row" py={2} px={4} justifyContent="space-between" alignItems="center">
-          <Typography variant="h6">Notifications</Typography>
-          <Chip label="5 new" color="primary" size="small" />
+          <Typography variant="h6">Low Stock Alerts</Typography>
+          <Chip label={`${notifications.length} new`} color="primary" size="small" />
         </Stack>
         <Scrollbar sx={{ height: '385px' }}>
-          {dropdownData.notifications.map((notification, index) => (
+          {notifications.map((notification, index) => (
             <Box key={index}>
               <MenuItem sx={{ py: 2, px: 4 }}>
                 <Stack direction="row" spacing={2}>
                   <Avatar
-                    src={notification.avatar}
-                    alt={notification.avatar}
                     sx={{
                       width: 48,
                       height: 48,
+                      backgroundColor: 'secondary.main',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
                     }}
-                  />
+                  >
+                    {notification.avatar} {/* Stock icon */}
+                  </Avatar>
                   <Box>
                     <Typography
                       variant="subtitle2"
@@ -111,7 +135,7 @@ const Notifications = () => {
         </Scrollbar>
         <Box p={3} pb={1}>
           <Button to="/apps/email" variant="outlined" component={Link} color="primary" fullWidth>
-            See all Notifications
+            See all Alerts
           </Button>
         </Box>
       </Menu>

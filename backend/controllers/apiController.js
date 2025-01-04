@@ -93,6 +93,23 @@ const deleteUser = async (req, res) => {
     res.status(500).json({ message: 'Error deleting user', error: err.message });
   }
 };
+const getProductsWithLowStock = async (req, res) => {
+  try {
+    // Query to fetch products with stock level less than 100
+    const [rows] = await db.execute('SELECT name, stock_level FROM products WHERE stock_level < 100');
+    
+    // Check if rows are returned
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'No products found with stock level less than 100' });
+    }
+
+    // Return the product names and quantities (stock levels)
+    res.status(200).json(rows);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching products with low stock', error: err.message });
+  }
+};
+
 
 // Products - Get all products
 const getProducts = async (req, res) => {
@@ -103,6 +120,8 @@ const getProducts = async (req, res) => {
     res.status(500).json({ message: 'Error fetching products', error: err.message });
   }
 };
+
+
 // Update Product by product_id
 const updateProduct = async (req, res) => {
   const { product_id } = req.params;
@@ -365,5 +384,5 @@ module.exports = {
   getSuppliers, createSupplier, updateSupplier, deleteSupplier,
   getTransactions, createTransaction,
   getOrders, createOrder,
-  getNotifications, createNotification
+  getNotifications, createNotification, getProductsWithLowStock
 };

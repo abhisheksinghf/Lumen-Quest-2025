@@ -17,52 +17,6 @@ import ddIcon7 from 'src/assets/images/svgs/icon-dd-message-box.svg';
 import ddIcon8 from 'src/assets/images/svgs/icon-dd-application.svg';
 
 //
-// Notifications dropdown
-//
-const notifications = [
-  {
-    avatar: img1,
-    title: 'Roman Joined the Team!',
-    subtitle: 'Congratulate him',
-  },
-  {
-    avatar: img2,
-    title: 'New message received',
-    subtitle: 'Salma sent you new message',
-  },
-  {
-    avatar: img3,
-    title: 'New Payment received',
-    subtitle: 'Check your earnings',
-  },
-  {
-    avatar: img4,
-    title: 'Jolly completed tasks',
-    subtitle: 'Assign her new tasks',
-  },
-  {
-    avatar: img1,
-    title: 'Roman Joined the Team!',
-    subtitle: 'Congratulate him',
-  },
-  {
-    avatar: img2,
-    title: 'New message received',
-    subtitle: 'Salma sent you new message',
-  },
-  {
-    avatar: img3,
-    title: 'New Payment received',
-    subtitle: 'Check your earnings',
-  },
-  {
-    avatar: img4,
-    title: 'Jolly completed tasks',
-    subtitle: 'Assign her new tasks',
-  },
-];
-
-//
 // Profile dropdown
 //
 const profile = [
@@ -174,4 +128,27 @@ const pageLinks = [
   },
 ];
 
+// Initialize notifications as an empty array
+let notifications = [];
+
+// Fetch data from API and update notifications
+async function fetchNotifications() {
+  const response = await fetch('http://localhost:5000/api/getlowstock');
+  const data = await response.json();
+
+  // Map the API response to the notifications format
+  notifications = data.map((product, index) => ({
+    avatar: [img1, img2, img3, img4][index % 4], // Cycle through avatars
+    title: product.name,
+    subtitle: `Stock Level: ${product.stock_level}`,
+  }));
+
+  // After fetching the data, you can now use the notifications array
+  console.log('Updated Notifications:', notifications);
+}
+
+// Call fetchNotifications function to populate notifications
+fetchNotifications();
+
+// Export notifications after they are populated
 export { notifications, profile, pageLinks, appsLink };

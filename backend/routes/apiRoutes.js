@@ -12,6 +12,7 @@ router.delete('/users/:id', apiController.deleteUser);
 
 // Products Routes
 router.get('/products', apiController.getProducts);
+router.get('/getlowstock', apiController.getProductsWithLowStock);
 router.post('/products', apiController.createProduct);
 router.put('/products/:product_id', apiController.updateProduct);
 router.delete('/products/:product_id', apiController.deleteProduct);

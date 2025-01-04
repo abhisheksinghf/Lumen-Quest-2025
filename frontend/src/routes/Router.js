@@ -47,6 +47,7 @@ const FormVertical = Loadable(lazy(() => import('../views/forms/FormVertical')))
 const Users = Loadable(lazy(() => import('../views/forms/Users')));
 const Products = Loadable(lazy(() => import('../views/forms/Products')));
 const Suppliers = Loadable(lazy(() => import('../views/forms/Suppliers')));
+const StockIN = Loadable(lazy(() => import('../views/forms/StockInOut')));
 
 
 // authentication
@@ -97,6 +98,7 @@ const Router = [
       { path: '/forms/Users', element: <Users /> },
       { path: '/forms/Products', element: <Products /> },
       { path: '/forms/Suppliers', element: <Suppliers /> },
+      { path: '/forms/StockInout', element: <StockIN /> },
       { path: '/widgets/cards', element: <WidgetCards /> },
       { path: '/widgets/banners', element: <WidgetBanners /> },
       { path: '/widgets/charts', element: <WidgetCharts /> },
