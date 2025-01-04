@@ -1,7 +1,7 @@
-// const db = require("../config/db");
+const db = require("../config/db");
 const jwt = require("jsonwebtoken");
 
-exports.registerUser = (req, res) => {
+registerUser = (req, res) => {
   const { email, password, role } = req.body;
 
   db.query("SELECT * FROM users WHERE email = ?", [email], (err, results) => {
@@ -26,7 +26,7 @@ exports.registerUser = (req, res) => {
   });
 };
 
-exports.loginUser = (req, res) => {
+loginUser = (req, res) => {
   const { email, password } = req.body;
 
   db.query("SELECT * FROM users WHERE email = ?", [email], (err, results) => {
@@ -51,4 +51,9 @@ exports.loginUser = (req, res) => {
 
     res.status(200).json({ message: "Login successful", token });
   });
+};
+
+module.exports = {
+  loginUser,
+  registerUser,
 };
