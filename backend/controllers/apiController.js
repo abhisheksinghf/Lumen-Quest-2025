@@ -143,6 +143,7 @@ const getSuppliers = async (req, res) => {
 };
 
 // Suppliers - Create a new supplier
+// Suppliers - Create a new supplier
 const createSupplier = async (req, res) => {
   const { name, contact_person, phone, email, address } = req.body;
   try {
@@ -150,11 +151,19 @@ const createSupplier = async (req, res) => {
       'INSERT INTO suppliers (name, contact_person, phone, email, address) VALUES (?, ?, ?, ?, ?)',
       [name, contact_person, phone, email, address]
     );
-    res.status(201).json({ message: 'Supplier created successfully', supplierId: result.insertId });
+
+    // Retrieve the newly created supplier
+    const [newSupplier] = await db.execute(
+      'SELECT * FROM suppliers WHERE supplier_id = ?',
+      [result.insertId]
+    );
+
+    res.status(201).json(newSupplier[0]); // Return the created supplier object
   } catch (err) {
     res.status(500).json({ message: 'Error creating supplier', error: err.message });
   }
 };
+
 
 // Update supplier by supplier_id
 const updateSupplier = async (req, res) => {
@@ -175,11 +184,18 @@ const updateSupplier = async (req, res) => {
       [name, contact_person, phone, email, address, supplier_id]
     );
 
-    res.status(200).json({ message: 'Supplier updated successfully' });
+    // Fetch the updated supplier details
+    const [updatedSupplier] = await db.execute(
+      'SELECT * FROM suppliers WHERE supplier_id = ?',
+      [supplier_id]
+    );
+
+    res.status(200).json(updatedSupplier[0]); // Return the updated supplier object
   } catch (err) {
     res.status(500).json({ message: 'Error updating supplier', error: err.message });
   }
 };
+
 
 // Delete supplier by supplier_id
 const deleteSupplier = async (req, res) => {

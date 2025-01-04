@@ -44,6 +44,7 @@ const MuiSwitch = Loadable(lazy(() => import('../views/forms/form-elements/MuiSw
 const FormVertical = Loadable(lazy(() => import('../views/forms/FormVertical')));
 const Users = Loadable(lazy(() => import('../views/forms/Users')));
 const Products = Loadable(lazy(() => import('../views/forms/Products')));
+const Suppliers = Loadable(lazy(() => import('../views/forms/Suppliers')));
 
 
 // authentication
@@ -91,6 +92,7 @@ const Router = [
       { path: '/forms/form-vertical', element: <FormVertical /> },
       { path: '/forms/Users', element: <Users /> },
       { path: '/forms/Products', element: <Products /> },
+      { path: '/forms/Suppliers', element: <Suppliers /> },
       { path: '/widgets/cards', element: <WidgetCards /> },
       { path: '/widgets/banners', element: <WidgetBanners /> },
       { path: '/widgets/charts', element: <WidgetCharts /> },

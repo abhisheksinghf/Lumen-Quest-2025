@@ -482,7 +482,7 @@ const Menuitems = [
     id: uniqueId(),
     title: 'Suppliers',
     icon: IconBoxAlignLeft,
-    href: '/forms/form-vertical',
+    href: '/forms/Suppliers',
   },
   // {
   //   id: uniqueId(),
