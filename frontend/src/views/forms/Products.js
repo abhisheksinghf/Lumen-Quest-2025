@@ -4,16 +4,10 @@ import {
   Typography,
   TextField,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   IconButton,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
+import { DataGrid } from '@mui/x-data-grid'; // Import DataGrid from Material-UI
 import axios from 'axios';
 import Breadcrumb from '../../layouts/full/shared/breadcrumb/Breadcrumb';
 
@@ -33,7 +27,11 @@ const ProductForm = () => {
     axios
       .get('http://localhost:5000/api/products')
       .then((response) => {
-        setRows(response.data);
+        const formattedRows = response.data.map((row, index) => ({
+          id: row.product_id, // Required by DataGrid
+          ...row,
+        }));
+        setRows(formattedRows);
       })
       .catch((error) => console.error('Error fetching products:', error));
   }, []);
@@ -50,19 +48,13 @@ const ProductForm = () => {
     if (editingIndex !== null) {
       // Update an existing product
       axios
-        .put(`http://localhost:5000/api/products/${rows[editingIndex].product_id}`, formData)
+        .put(`http://localhost:5000/api/products/${editingIndex}`, formData)
         .then((response) => {
-          const updatedRows = [...rows];
-          updatedRows[editingIndex] = response.data;
+          const updatedRows = rows.map((row) =>
+            row.id === editingIndex ? { ...row, ...formData } : row
+          );
           setRows(updatedRows);
-          setEditingIndex(null);
-          setFormData({
-            name: '',
-            category: '',
-            stock_level: '',
-            reorder_point: '',
-            description: '',
-          });
+          resetForm();
         })
         .catch((error) => console.error('Error updating product:', error));
     } else {
@@ -70,18 +62,25 @@ const ProductForm = () => {
       axios
         .post('http://localhost:5000/api/products', formData)
         .then((response) => {
-          // Ensure the rows are updated with the latest data
-          setRows((prevRows) => [...prevRows, response.data]); // Using prevRows to ensure correct state update
-          setFormData({
-            name: '',
-            category: '',
-            stock_level: '',
-            reorder_point: '',
-            description: '',
-          });
+          setRows((prevRows) => [
+            ...prevRows,
+            { id: response.data.product_id, ...response.data },
+          ]);
+          resetForm();
         })
         .catch((error) => console.error('Error adding product:', error));
     }
+  };
+
+  const resetForm = () => {
+    setEditingIndex(null);
+    setFormData({
+      name: '',
+      category: '',
+      stock_level: '',
+      reorder_point: '',
+      description: '',
+    });
   };
 
   // Breadcrumb for navigation
@@ -96,9 +95,12 @@ const ProductForm = () => {
   ];
 
   // Handle editing an existing product
-  const handleEdit = (index) => {
-    setEditingIndex(index);
-    setFormData(rows[index]);
+  const handleEdit = (id) => {
+    const product = rows.find((row) => row.id === id);
+    if (product) {
+      setEditingIndex(id);
+      setFormData(product);
+    }
   };
 
   // Handle deleting a product
@@ -106,10 +108,78 @@ const ProductForm = () => {
     axios
       .delete(`http://localhost:5000/api/products/${id}`)
       .then(() => {
-        setRows(rows.filter((row) => row.product_id !== id));
+        setRows(rows.filter((row) => row.id !== id));
       })
       .catch((error) => console.error('Error deleting product:', error));
   };
+
+  // Export to CSV functionality
+  const exportToCSV = () => {
+    const headers = [
+      'Product Name',
+      'Category',
+      'Stock Level',
+      'Reorder Point',
+      'Description',
+    ];
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((row) =>
+        [
+          row.name,
+          row.category,
+          row.stock_level,
+          row.reorder_point,
+          row.description,
+        ].join(',')
+      ),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'products.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // DataGrid columns definition
+  const columns = [
+    { field: 'name', headerName: 'Product Name', flex: 1, sortable: true },
+    { field: 'category', headerName: 'Category', flex: 1, sortable: true },
+    { field: 'stock_level', headerName: 'Stock Level', flex: 1, sortable: true },
+    {
+      field: 'reorder_point',
+      headerName: 'Reorder Point',
+      flex: 1,
+      sortable: true,
+    },
+    { field: 'description', headerName: 'Description', flex: 1, sortable: true },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      flex: 1,
+      sortable: false,
+      renderCell: (params) => (
+        <>
+          <IconButton
+            color="primary"
+            onClick={() => handleEdit(params.row.id)}
+          >
+            <Edit />
+          </IconButton>
+          <IconButton
+            color="secondary"
+            onClick={() => handleDelete(params.row.id)}
+          >
+            <Delete />
+          </IconButton>
+        </>
+      ),
+    },
+  ];
 
   return (
     <div style={{ padding: '0px' }}>
@@ -178,56 +248,24 @@ const ProductForm = () => {
         </Grid>
       </form>
 
-      <Typography variant="h5" gutterBottom>
-        Product Table
-      </Typography>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Product Name</TableCell>
-              <TableCell>Category</TableCell>
-              <TableCell>Stock Level</TableCell>
-              <TableCell>Reorder Point</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.length > 0 ? (
-              rows.map((row, index) => (
-                <TableRow key={row.product_id}>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.category}</TableCell>
-                  <TableCell>{row.stock_level}</TableCell>
-                  <TableCell>{row.reorder_point}</TableCell>
-                  <TableCell>{row.description}</TableCell>
-                  <TableCell>
-                    <IconButton
-                      color="primary"
-                      onClick={() => handleEdit(index)}
-                    >
-                      <Edit />
-                    </IconButton>
-                    <IconButton
-                      color="secondary"
-                      onClick={() => handleDelete(row.product_id)}
-                    >
-                      <Delete />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={6} align="center">
-                  No data available
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <Button
+        variant="contained"
+        color="secondary"
+        style={{ marginBottom: '20px' }}
+        onClick={exportToCSV}
+      >
+        Export to CSV
+      </Button>
+
+      <div style={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pageSize={5}
+          rowsPerPageOptions={[5, 10, 20]}
+          disableSelectionOnClick
+        />
+      </div>
     </div>
   );
 };

@@ -24,9 +24,9 @@ import Breadcrumb from '../../layouts/full/shared/breadcrumb/Breadcrumb';
 const UserForm = () => {
   const [formData, setFormData] = useState({
     username: '',
+    password: '',
     email: '',
     role: '',
-    status: '',
   });
   const [rows, setRows] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -61,9 +61,9 @@ const UserForm = () => {
           setEditingIndex(null);
           setFormData({
             username: '',
+            password: '',
             email: '',
             role: '',
-            status: '',
           });
         })
         .catch((error) => console.error('Error updating user:', error));
@@ -72,13 +72,12 @@ const UserForm = () => {
       axios
         .post('http://localhost:5000/api/users', formData)
         .then((response) => {
-          // Ensure the rows are updated with the latest data
-          setRows((prevRows) => [...prevRows, response.data]); // Using prevRows to ensure correct state update
+          setRows((prevRows) => [...prevRows, response.data]);
           setFormData({
             username: '',
+            password: '',
             email: '',
             role: '',
-            status: '',
           });
         })
         .catch((error) => console.error('Error adding user:', error));
@@ -99,7 +98,7 @@ const UserForm = () => {
   // Handle editing an existing user
   const handleEdit = (index) => {
     setEditingIndex(index);
-    setFormData(rows[index]);
+    setFormData({ ...rows[index], password: '' }); // Clear password when editing
   };
 
   // Handle deleting a user
@@ -143,6 +142,17 @@ const UserForm = () => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              type="password"
+              required={editingIndex === null} // Required only for new users
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Role</InputLabel>
               <Select
@@ -152,21 +162,11 @@ const UserForm = () => {
                 onChange={handleChange}
                 required
               >
-                <MenuItem value="admin">Admin</MenuItem>
-                <MenuItem value="manager">Manager</MenuItem>
-                <MenuItem value="staff">Staff</MenuItem>
+                <MenuItem value="Admin">Admin</MenuItem>
+                <MenuItem value="Manager">Manager</MenuItem>
+                <MenuItem value="Staff">Staff</MenuItem>
               </Select>
             </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Status"
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              required
-            />
           </Grid>
           <Grid item xs={12}>
             <Button variant="contained" color="primary" type="submit">
@@ -186,7 +186,6 @@ const UserForm = () => {
               <TableCell>Username</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Role</TableCell>
-              <TableCell>Status</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -197,7 +196,6 @@ const UserForm = () => {
                   <TableCell>{row.username}</TableCell>
                   <TableCell>{row.email}</TableCell>
                   <TableCell>{row.role}</TableCell>
-                  <TableCell>{row.status}</TableCell>
                   <TableCell>
                     <IconButton
                       color="primary"
@@ -216,7 +214,7 @@ const UserForm = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={4} align="center">
                   No data available
                 </TableCell>
               </TableRow>

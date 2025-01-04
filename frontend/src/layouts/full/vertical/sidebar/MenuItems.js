@@ -460,6 +460,12 @@ const Menuitems = [
   // },
   {
     id: uniqueId(),
+    title: 'Dashboard',
+    icon: IconBoxAlignLeft,
+    href: '/dashboards/ecommerce',
+  },
+  {
+    id: uniqueId(),
     title: 'Users',
     icon: IconBoxAlignLeft,
     href: '/forms/users',
