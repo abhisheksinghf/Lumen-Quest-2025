@@ -14,7 +14,7 @@ const Growth = () => {
   const secondary = theme.palette.secondary.main;
 
   // chart
-  const optionscolumnchart = {
+  const optionsGrowthChart = {
     chart: {
       type: 'area',
       height: 25,
@@ -47,9 +47,9 @@ const Growth = () => {
       },
     },
   };
-  const seriescolumnchart = [
+  const seriesGrowthChart = [
     {
-      name: '',
+      name: 'Stock Growth',
       data: [0, 10, 10, 10, 35, 45, 30, 30, 30, 50, 52, 30, 25, 45, 50, 80, 60, 65],
     },
   ];
@@ -69,7 +69,7 @@ const Growth = () => {
         </Box>
 
         <Box mt={3} mb={2}>
-          <Chart options={optionscolumnchart} series={seriescolumnchart} type="area" height="25px" />
+          <Chart options={optionsGrowthChart} series={seriesGrowthChart} type="area" height="25px" />
         </Box>
 
         <Typography variant="h4">
@@ -79,7 +79,7 @@ const Growth = () => {
           </span>
         </Typography>
         <Typography variant="subtitle2" color="textSecondary">
-          Growth
+          Stock Growth
         </Typography>
       </>
     </DashboardCard>

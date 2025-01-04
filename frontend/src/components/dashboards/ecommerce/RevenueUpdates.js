@@ -1,7 +1,7 @@
 import React from 'react';
 import Chart from 'react-apexcharts';
 import { useTheme } from '@mui/material/styles';
-import { Stack, Typography,  Avatar, Box } from '@mui/material';
+import { Stack, Typography, Avatar, Box } from '@mui/material';
 import DashboardCard from '../../shared/DashboardCard';
 
 const RevenueUpdates = () => {
@@ -12,7 +12,7 @@ const RevenueUpdates = () => {
   const secondary = theme.palette.secondary.main;
 
   // chart
-  const optionscolumnchart = {
+  const optionsRevenueChart = {
     chart: {
       type: 'bar',
       fontFamily: "'Plus Jakarta Sans', sans-serif;",
@@ -46,7 +46,6 @@ const RevenueUpdates = () => {
     },
     grid: {
       show: false,
-      
     },
     yaxis: {
       min: -5,
@@ -54,7 +53,7 @@ const RevenueUpdates = () => {
       tickAmount: 4,
     },
     xaxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],  // Replace with actual data over months
       axisTicks: {
         show: false,
       }
@@ -64,21 +63,19 @@ const RevenueUpdates = () => {
       fillSeriesColor: false,
     },
   };
-  const seriescolumnchart = [
+  const seriesRevenueChart = [
     {
-      name: 'Footware',
-      data: [2.5, 3.7, 3.2, 2.6, 1.9],
+      name: 'Telecom Devices',
+      data: [2.5, 3.7, 3.2, 2.6, 1.9],  // Example data; replace with actual revenue data
     },
     {
-      name: 'Fashionware',
-      data: [-2.8, -1.1, -3.0, -1.5, -1.9],
+      name: 'Services',
+      data: [-2.8, -1.1, -3.0, -1.5, -1.9],  // Example data; replace with actual revenue data
     },
   ];
 
   return (
-    <DashboardCard
-      title="Revenue Updates"
-      subtitle="Overview of Profit">
+    <DashboardCard title="Revenue Updates" subtitle="Overview of Product Revenue">
       <>
         <Stack direction="row" spacing={3}>
           <Stack direction="row" alignItems="center" spacing={1}>
@@ -87,7 +84,7 @@ const RevenueUpdates = () => {
             ></Avatar>
             <Box>
               <Typography variant="subtitle2" fontSize="12px" color="textSecondary">
-                Footware
+                Telecom Devices
               </Typography>
             </Box>
           </Stack>
@@ -97,12 +94,12 @@ const RevenueUpdates = () => {
             ></Avatar>
             <Box>
               <Typography variant="subtitle2" fontSize="12px" color="textSecondary">
-                Fashionware
+                Services
               </Typography>
             </Box>
           </Stack>
         </Stack>
-        <Chart options={optionscolumnchart} series={seriescolumnchart} type="bar" height="320px" />
+        <Chart options={optionsRevenueChart} series={seriesRevenueChart} type="bar" height="320px" />
       </>
     </DashboardCard>
   );

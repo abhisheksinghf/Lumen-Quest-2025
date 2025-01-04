@@ -10,6 +10,7 @@ const BlankLayout = Loadable(lazy(() => import('../layouts/blank/BlankLayout')))
 /* ****Pages***** */
 const ModernDash = Loadable(lazy(() => import('../views/dashboard/Modern')));
 const EcommerceDash = Loadable(lazy(() => import('../views/dashboard/Ecommerce')));
+const AdminDashboard = Loadable(lazy(() => import('../views/dashboard/AdminDashboard')));
 
 const UserProfile = Loadable(lazy(() => import('../views/apps/user-profile/UserProfile')));
 const Followers = Loadable(lazy(() => import('../views/apps/user-profile/Followers')));
@@ -70,7 +71,8 @@ const Router = [
       { path: '/', element: <Navigate to="/dashboards/Users" /> },
       { path: '/dashboards/modern', exact: true, element: <Users /> },
       // { path: '/dashboards/modern', exact: true, element: <ModernDash /> },
-      { path: '/dashboards/ecommerce', exact: true, element: <EcommerceDash /> },
+      { path: '/dashboards/admin', exact: true, element: <EcommerceDash /> },
+      // { path: '/dashboards/admin', exact: true, element: <AdminDashboard /> },
       { path: '/apps/invoice/list', element: <InvoiceList /> },
       { path: '/apps/invoice/create', element: <InvoiceCreate /> },
       { path: '/apps/invoice/detail/:id', element: <InvoiceDetail /> },

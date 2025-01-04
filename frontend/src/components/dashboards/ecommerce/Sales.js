@@ -11,8 +11,8 @@ const Sales = () => {
   const primary = theme.palette.primary.main;
   const secondary = theme.palette.secondary.main;
 
-  // chart
-  const optionscolumnchart = {
+  // chart options for product sales
+  const optionsSalesChart = {
     chart: {
       type: 'bar',
       fontFamily: "'Plus Jakarta Sans', sans-serif;",
@@ -21,7 +21,7 @@ const Sales = () => {
         show: false,
       },
       height: 90,
-      width:'100%',
+      width: '100%',
       stacked: true,
       stackType: '100%',
       sparkline: {
@@ -58,21 +58,23 @@ const Sales = () => {
     },
     responsive: [{ breakpoint: 1025, options: { chart: { height: 150, width: 250 } } }],
   };
-  const seriescolumnchart = [
+
+  // sample sales data for different telecom products
+  const seriesSalesChart = [
     {
       color: primary,
-      name: '',
-      data: [25, 35, 20, 25, 40, 25],
+      name: 'Devices Sales', // Representing telecom devices sales
+      data: [50, 60, 55, 70, 65, 80], // Sample sales data over 6 months
     },
     {
       color: secondary,
-      name: '',
-      data: [35, 40, 20, 35, 40, 35],
+      name: 'Accessories Sales', // Representing accessories sales
+      data: [35, 45, 40, 50, 55, 60], // Sample sales data over 6 months
     },
     {
       color: '#EAEFF4',
-      name: '',
-      data: [40, 25, 60, 40, 20, 40],
+      name: 'Service Plans Sales', // Representing service plans sales
+      data: [40, 35, 50, 45, 60, 70], // Sample sales data over 6 months
     },
   ];
 
@@ -81,10 +83,10 @@ const Sales = () => {
       <>
         <Typography variant="h4">$65,432</Typography>
         <Typography variant="subtitle2" color="textSecondary" mb={3}>
-          Sales
+          Telecom Product Sales
         </Typography>
         <Box className="rounded-bars">
-        <Chart options={optionscolumnchart} series={seriescolumnchart} type="bar" height="90px" />
+          <Chart options={optionsSalesChart} series={seriesSalesChart} type="bar" height="90px" />
         </Box>
       </>
     </DashboardCard>

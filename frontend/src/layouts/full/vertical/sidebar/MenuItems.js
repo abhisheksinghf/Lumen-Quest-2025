@@ -465,7 +465,7 @@ const Menuitems = [
     id: uniqueId(),
     title: 'Dashboard',
     icon: IconDashboard,
-    href: '/dashboards/ecommerce',
+    href: '/dashboards/admin',
   },
   {
     id: uniqueId(),

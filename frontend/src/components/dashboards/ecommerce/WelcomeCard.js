@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Avatar, Typography, Card, CardContent, Grid, Divider, Stack } from '@mui/material';
-import { IconArrowUpRight } from '@tabler/icons';
+import { IconArrowUpRight, IconTrendingUp } from '@tabler/icons';
 
 import welcomeImg from 'src/assets/images/backgrounds/welcome-bg2.png';
 import userImg from 'src/assets/images/profile/user-1.jpg';
@@ -28,7 +28,7 @@ const WelcomeCard = () => {
               >
                 <Avatar src={userImg} alt="img" sx={{ width: 40, height: 40 }} />
                 <Typography variant="h5" whiteSpace="nowrap">
-                  Welcome back Mathew Anderson!
+                  Welcome back, Admin!
                 </Typography>
               </Box>
 
@@ -40,24 +40,24 @@ const WelcomeCard = () => {
               >
                 <Box>
                   <Typography variant="h2" whiteSpace="nowrap">
-                    $2,340{' '}
+                    $18,450{' '}
                     <span>
                       <IconArrowUpRight width={18} color="#39B69A" />
                     </span>
                   </Typography>
                   <Typography variant="subtitle1" whiteSpace="nowrap">
-                    Today’s Sales
+                    Current Inventory Value
                   </Typography>
                 </Box>
                 <Box>
                   <Typography variant="h2" whiteSpace="nowrap">
-                    35%
+                    42%
                     <span>
-                      <IconArrowUpRight width={18} color="#39B69A" />
+                      <IconTrendingUp width={18} color="#39B69A" />
                     </span>
                   </Typography>
                   <Typography variant="subtitle1" whiteSpace="nowrap">
-                    Performance
+                    Low Stock Alerts
                   </Typography>
                 </Box>
               </Stack>

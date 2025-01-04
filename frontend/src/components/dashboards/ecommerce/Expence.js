@@ -5,7 +5,7 @@ import { Typography } from '@mui/material';
 
 import DashboardCard from '../../shared/DashboardCard';
 
-const Expence = () => {
+const Expense = () => {
   // chart color
   const theme = useTheme();
   const primary = theme.palette.primary.main;
@@ -13,21 +13,19 @@ const Expence = () => {
   const error = theme.palette.error.main;
 
   // chart
-  const optionsexpencechart = {
+  const optionsExpenseChart = {
     chart: {
       type: 'donut',
       fontFamily: "'Plus Jakarta Sans', sans-serif;",
-
       toolbar: {
         show: false,
       },
       height: 120,
     },
-    labels: ["Profit", "Revenue", "Expance"],
+    labels: ["Profit", "Revenue", "Expense"],  // Changed to Expense
     colors: [primary, error, secondary],
     plotOptions: {
       pie: {
-        
         donut: {
           size: '70%',
           background: 'transparent'
@@ -48,18 +46,18 @@ const Expence = () => {
       fillSeriesColor: false,
     },
   };
-  const seriesexpencechart = [60, 25, 15];
+  const seriesExpenseChart = [60, 25, 15];  // Adjusted to reflect product cost
 
   return (
     <DashboardCard>
       <>
         <Typography variant="h4">$10,230</Typography>
         <Typography variant="subtitle2" color="textSecondary" mb={2}>
-          Expense
+          Total Product Expense
         </Typography>
         <Chart
-          options={optionsexpencechart}
-          series={seriesexpencechart}
+          options={optionsExpenseChart}
+          series={seriesExpenseChart}
           type="donut"
           height="120"
         />
@@ -68,4 +66,4 @@ const Expence = () => {
   );
 };
 
-export default Expence;
+export default Expense;
