@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Container, Typography, Paper } from '@mui/material';
+import { Box, Grid, Container, Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import axios from 'axios';
 import Chart from 'react-apexcharts';
@@ -16,32 +16,23 @@ const Dashboard = () => {
   const theme = useTheme();
   const primary = theme.palette.primary.main;
   const secondary = theme.palette.secondary.main;
-  const error = theme.palette.error.main;
 
   // State for counts and data
-  const [userCount, setUserCount] = useState(null);
   const [productCount, setProductCount] = useState(null);
-  const [supplierCount, setSupplierCount] = useState(null);
   const [orderCount, setOrderCount] = useState(null);
-  const [ordersData, setOrdersData] = useState([]);
-  const [productsData, setProductsData] = useState([]);
+  const [stockTransactions, setStockTransactions] = useState([]);
 
   // Fetch data from API endpoints
   const fetchData = async () => {
     try {
-      const userResponse = await axios.get('http://localhost:5000/api/users');
-      setUserCount(userResponse.data.length);
-
       const productResponse = await axios.get('http://localhost:5000/api/products');
       setProductCount(productResponse.data.length);
-      setProductsData(productResponse.data);
-
-      const supplierResponse = await axios.get('http://localhost:5000/api/suppliers');
-      setSupplierCount(supplierResponse.data.length);
 
       const orderResponse = await axios.get('http://localhost:5000/api/orders');
       setOrderCount(orderResponse.data.length);
-      setOrdersData(orderResponse.data);
+
+      const transactionResponse = await axios.get('http://localhost:5000/api/transactions');
+      setStockTransactions(transactionResponse.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -50,46 +41,6 @@ const Dashboard = () => {
   useEffect(() => {
     fetchData();
   }, []); // This will run once when the component mounts
-
-  // Process orders data for the monthly chart
-  const processOrdersByMonth = (orders) => {
-    const orderCountsByMonth = Array(12).fill(0);
-    orders.forEach(order => {
-      const month = new Date(order.order_date).getMonth(); // getMonth returns 0 for January
-      orderCountsByMonth[month]++;
-    });
-    return orderCountsByMonth;
-  };
-
-  // Process products data for the category pie chart
-  const processProductsByCategory = (products) => {
-    const categoryCounts = {};
-    products.forEach(product => {
-      categoryCounts[product.category] = (categoryCounts[product.category] || 0) + 1;
-    });
-    return categoryCounts;
-  };
-
-  const ordersByMonth = processOrdersByMonth(ordersData);
-  const productCategories = processProductsByCategory(productsData);
-
-  // Pie chart options for products by category
-  const productCategoryChartOptions = {
-    chart: {
-      type: 'pie',
-      height: 280,
-    },
-    labels: Object.keys(productCategories),
-    colors: Object.values(productCategories).map((_, idx) => theme.palette[`${['primary', 'secondary', 'error', 'warning'][idx % 4]}`].main),
-    dataLabels: {
-      enabled: true,
-    },
-    legend: {
-      position: 'bottom',
-    },
-  };
-
-  const productCategoryChartSeries = Object.values(productCategories);
 
   // Bar chart options for orders by month
   const ordersByMonthChartOptions = {
@@ -117,7 +68,7 @@ const Dashboard = () => {
   };
 
   const ordersByMonthChartSeries = [
-    { name: 'Orders', data: ordersByMonth },
+    { name: 'Orders', data: [10, 20, 15, 30, 25, 35, 40, 45, 50, 60, 55, 70] }, // Dummy data
   ];
 
   return (
@@ -130,27 +81,13 @@ const Dashboard = () => {
           {/* Count Cards */}
           <Grid item xs={12} sm={6} lg={3}>
             <Paper sx={{ padding: 5, borderRadius: 3, boxShadow: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: primary }}>
-              <Typography variant="h4" color="white" fontWeight="bold">{userCount !== null ? userCount : 'Loading...'}</Typography>
-              <Typography variant="subtitle2" color="white">Total Users</Typography>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} sm={6} lg={3}>
-            <Paper sx={{ padding: 5, borderRadius: 3, boxShadow: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: secondary }}>
               <Typography variant="h4" color="white" fontWeight="bold">{productCount !== null ? productCount : 'Loading...'}</Typography>
               <Typography variant="subtitle2" color="white">Total Products</Typography>
             </Paper>
           </Grid>
 
           <Grid item xs={12} sm={6} lg={3}>
-            <Paper sx={{ padding: 5, borderRadius: 3, boxShadow: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#1a73e8' }}>
-              <Typography variant="h4" color="white" fontWeight="bold">{supplierCount !== null ? supplierCount : 'Loading...'}</Typography>
-              <Typography variant="subtitle2" color="white">Total Suppliers</Typography>
-            </Paper>
-          </Grid>
-
-          <Grid item xs={12} sm={6} lg={3}>
-            <Paper sx={{ padding: 5, borderRadius: 3, boxShadow: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f44336' }}>
+            <Paper sx={{ padding: 5, borderRadius: 3, boxShadow: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: secondary }}>
               <Typography variant="h4" color="white" fontWeight="bold">{orderCount !== null ? orderCount : 'Loading...'}</Typography>
               <Typography variant="subtitle2" color="white">Total Orders</Typography>
             </Paper>
@@ -166,11 +103,38 @@ const Dashboard = () => {
             </Paper>
           </Grid>
 
-          {/* Product Category Pie Chart Section */}
+          {/* Stock In/Out Table Section */}
           <Grid item xs={12} sm={6} lg={6}>
             <Paper sx={{ padding: 4, borderRadius: 3, boxShadow: 6 }}>
-              <Typography variant="h4" color="textPrimary" fontWeight="bold">Product Categories</Typography>
-              <Chart options={productCategoryChartOptions} series={productCategoryChartSeries} type="pie" height="320" />
+              <Typography variant="h4" color="textPrimary" fontWeight="bold">Stock In/Out Transactions</Typography>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Date</TableCell>
+                      <TableCell>Product</TableCell>
+                      <TableCell>Type</TableCell>
+                      <TableCell>Quantity</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {stockTransactions.length > 0 ? (
+                      stockTransactions.map((transaction, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{new Date(transaction.date).toLocaleDateString()}</TableCell>
+                          <TableCell>{transaction.product}</TableCell>
+                          <TableCell>{transaction.type}</TableCell>
+                          <TableCell>{transaction.quantity}</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={4} align="center">No transactions available</TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
             </Paper>
           </Grid>
         </Grid>

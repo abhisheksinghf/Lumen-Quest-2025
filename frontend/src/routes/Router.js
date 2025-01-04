@@ -10,6 +10,7 @@ const BlankLayout = Loadable(lazy(() => import('../layouts/blank/BlankLayout')))
 /* ****Pages***** */
 const ModernDash = Loadable(lazy(() => import('../views/dashboard/Modern')));
 const EcommerceDash = Loadable(lazy(() => import('../views/dashboard/Ecommerce')));
+const StaffDash = Loadable(lazy(() => import('../views/dashboard/StaffDashboard')));
 const AdminDashboard = Loadable(lazy(() => import('../views/dashboard/AdminDashboard')));
 
 const UserProfile = Loadable(lazy(() => import('../views/apps/user-profile/UserProfile')));
@@ -72,6 +73,7 @@ const Router = [
       { path: '/dashboards/modern', exact: true, element: <Users /> },
       // { path: '/dashboards/modern', exact: true, element: <ModernDash /> },
       { path: '/dashboards/admin', exact: true, element: <EcommerceDash /> },
+      { path: '/dashboards/staff', exact: true, element: <StaffDash /> },
       // { path: '/dashboards/admin', exact: true, element: <AdminDashboard /> },
       { path: '/apps/invoice/list', element: <InvoiceList /> },
       { path: '/apps/invoice/create', element: <InvoiceCreate /> },
