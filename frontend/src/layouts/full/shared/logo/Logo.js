@@ -1,44 +1,39 @@
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { ReactComponent as LogoDark } from 'src/assets/images/logos/dark-logo.svg';
-import { ReactComponent as LogoDarkRTL } from 'src/assets/images/logos/dark-rtl-logo.svg';
-import { ReactComponent as LogoLight } from 'src/assets/images/logos/light-logo.svg';
-import { ReactComponent as LogoLightRTL } from 'src/assets/images/logos/light-logo-rtl.svg';
 import { styled } from '@mui/material';
 
 const Logo = () => {
   const customizer = useSelector((state) => state.customizer);
+
+  // Styled link component
   const LinkStyled = styled(Link)(() => ({
     height: customizer.TopbarHeight,
     width: customizer.isCollapse ? '40px' : '180px',
     overflow: 'hidden',
     display: 'block',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: 'bold',
+    fontSize: '24px',
   }));
 
+  // Return the text based on the activeDir (LTR or RTL) and activeMode (light or dark)
   if (customizer.activeDir === 'ltr') {
     return (
-      <LinkStyled to="/" style={{
-        display: 'flex',
-        alignItems: 'center',
-      }}>
-        {customizer.activeMode === 'dark' ? (
-          <LogoLight />
-        ) : (
-          <LogoDark />
-        )}
+      <LinkStyled to="/">
+        <span style={{ color: customizer.activeMode === 'dark' ? '#fff' : '#000' }}>
+          IKSHANA
+        </span>
       </LinkStyled>
     );
   }
+
   return (
-    <LinkStyled to="/" style={{
-      display: 'flex',
-      alignItems: 'center',
-    }}>
-      {customizer.activeMode === 'dark' ? (
-        <LogoDarkRTL />
-      ) : (
-        <LogoLightRTL />
-      )}
+    <LinkStyled to="/">
+      <span style={{ color: customizer.activeMode === 'dark' ? '#fff' : '#000' }}>
+        IKSHANA
+      </span>
     </LinkStyled>
   );
 };
